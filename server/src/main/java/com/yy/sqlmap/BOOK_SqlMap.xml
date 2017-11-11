@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE sqlMap PUBLIC "-//ibatis.apache.org//DTD SQL Map 2.0//EN" "http://ibatis.apache.org/dtd/sql-map-2.dtd">
+<sqlMap namespace="BOOK">
+  <resultMap class="com.yy.Book" id="BookResult">
+    <result column="BOOK_ID" jdbcType="DECIMAL" property="bookId" />
+    <result column="BOOK_NAME" jdbcType="VARCHAR" property="bookName" />
+    <result column="BOOK_AUTHOR" jdbcType="VARCHAR" property="bookAuthor" />
+    <result column="TYPE_ID" jdbcType="DECIMAL" property="typeId" />
+    <result column="BOOK_PUB" jdbcType="TIMESTAMP" property="bookPub" />
+    <result column="BOOK_REMARK" jdbcType="VARCHAR" property="bookRemark" />
+  </resultMap>
+	<!-- 处理条件的模板sql语句 -->
+	<sql id="Example_Where_Clause">
+		<!-- 条件集合不为null时说明有附加条件 -->
+		<isNotNull property="ConditionUnitList">
+			<iterate property="ConditionUnitList" prepend=" AND " conjunction=" AND ">
+				$ConditionUnitList[].name$  $ConditionUnitList[].relation$
+				<!-- 等于条件解析 -->
+				<isEqual property="${ConditionUnitList[].defaultRelation}" compareValue="true">
+						#ConditionUnitList[].value[0]#
+				</isEqual>
+				<!-- in条件解析 -->
+				<isEqual property="${ConditionUnitList[].relation}" compareValue="IN">
+					<iterate property="${ConditionUnitList[].value}" open="(" close=")" conjunction=",">
+						#ConditionUnitList[].value[]#
+					</iterate>
+				</isEqual>
+				<!-- 模糊条件解析 -->
+				<isEqual property="${ConditionUnitList[].relation}" compareValue="LIKE">
+						'%'||#ConditionUnitList[].value[0]#||'%'
+				</isEqual>
+				<!-- 范围条件解析 -->
+				<isEqual property="${ConditionUnitList[].relation}" compareValue="BETWEEN">
+					#ConditionUnitList[].value[0]# AND #ConditionUnitList[].value[1]#
+				</isEqual>
+			</iterate>
+		</isNotNull>
+	</sql>  
+  
+  <select id="selectByPrimaryKey" parameterClass="com.yy.Book" resultMap="BookResult">
+    select BOOK_ID, BOOK_NAME, BOOK_AUTHOR, TYPE_ID, BOOK_PUB, BOOK_REMARK
+    from BOOK
+    where BOOK_ID = #bookId:DECIMAL#
+  </select>
+  <select id="selectByExample" resultMap="BookResult">
+    select BOOK_ID, BOOK_NAME, BOOK_AUTHOR, TYPE_ID, BOOK_PUB, BOOK_REMARK
+    from BOOK WHERE 1=1 
+    <isParameterPresent>
+      <include refid="BOOK.Example_Where_Clause" />
+      
+    </isParameterPresent>
+  </select>
+  <delete id="deleteByPrimaryKey" parameterClass="com.yy.Book">
+    delete from BOOK
+    where BOOK_ID = #bookId:DECIMAL#
+  </delete>
+  <delete id="deleteByExample" parameterClass="com.yy.BookExample">
+    delete from BOOK
+    <include refid="BOOK.Example_Where_Clause" />
+  </delete>
+  <insert id="insert" parameterClass="com.yy.Book">
+    insert into BOOK (BOOK_ID, BOOK_NAME, BOOK_AUTHOR, TYPE_ID, BOOK_PUB, BOOK_REMARK)
+    values (#bookId:DECIMAL#, #bookName:VARCHAR#, #bookAuthor:VARCHAR#, #typeId:DECIMAL#,
+      #bookPub:TIMESTAMP#, #bookRemark:VARCHAR#)
+  </insert>
+  <update id="updateByPrimaryKey" parameterClass="com.yy.Book">
+    update BOOK
+    set BOOK_NAME = #bookName:VARCHAR#,
+      BOOK_AUTHOR = #bookAuthor:VARCHAR#,
+      TYPE_ID = #typeId:DECIMAL#,
+      BOOK_PUB = #bookPub:TIMESTAMP#,
+      BOOK_REMARK = #bookRemark:VARCHAR#
+    where BOOK_ID = #bookId:DECIMAL#
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterClass="com.yy.Book">
+    update BOOK
+    <dynamic prepend="set">
+      <isNotNull prepend="," property="bookName">
+        BOOK_NAME = #bookName:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="bookAuthor">
+        BOOK_AUTHOR = #bookAuthor:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="typeId">
+        TYPE_ID = #typeId:DECIMAL#
+      </isNotNull>
+      <isNotNull prepend="," property="bookPub">
+        BOOK_PUB = #bookPub:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="bookRemark">
+        BOOK_REMARK = #bookRemark:VARCHAR#
+      </isNotNull>
+    </dynamic>
+    where BOOK_ID = #bookId:DECIMAL#
+  </update>
+  <select id="countByExample" parameterClass="com.yy.BookExample" resultClass="java.lang.Integer">
+    select count(*) from BOOK
+    <include refid="BOOK.Example_Where_Clause" />
+  </select>
+  <update id="updateByExampleSelective">
+    update BOOK
+    <dynamic prepend="set">
+      <isNotNull prepend="," property="record.bookId">
+        BOOK_ID = #record.bookId:DECIMAL#
+      </isNotNull>
+      <isNotNull prepend="," property="record.bookName">
+        BOOK_NAME = #record.bookName:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.bookAuthor">
+        BOOK_AUTHOR = #record.bookAuthor:VARCHAR#
+      </isNotNull>
+      <isNotNull prepend="," property="record.typeId">
+        TYPE_ID = #record.typeId:DECIMAL#
+      </isNotNull>
+      <isNotNull prepend="," property="record.bookPub">
+        BOOK_PUB = #record.bookPub:TIMESTAMP#
+      </isNotNull>
+      <isNotNull prepend="," property="record.bookRemark">
+        BOOK_REMARK = #record.bookRemark:VARCHAR#
+      </isNotNull>
+    </dynamic>
+    <isParameterPresent>
+      <include refid="BOOK.Example_Where_Clause" />
+    </isParameterPresent>
+  </update>
+  <update id="updateByExample">
+    update BOOK
+    set BOOK_ID = #record.bookId:DECIMAL#,
+      BOOK_NAME = #record.bookName:VARCHAR#,
+      BOOK_AUTHOR = #record.bookAuthor:VARCHAR#,
+      TYPE_ID = #record.typeId:DECIMAL#,
+      BOOK_PUB = #record.bookPub:TIMESTAMP#,
+      BOOK_REMARK = #record.bookRemark:VARCHAR#
+    <isParameterPresent>
+      <include refid="BOOK.Example_Where_Clause" />
+    </isParameterPresent>
+  </update>
+</sqlMap>

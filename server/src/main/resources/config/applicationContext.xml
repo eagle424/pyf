@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+	http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+	">
+	
+	<!-- 启用spring 注解 (使用context:component-scan
+		 时这个配置可以省略,除非使用JPA等高级功能)-->
+	<context:annotation-config />
+	<!-- 设置使用注解的类所在的jar包 -->
+	<context:component-scan base-package="com.yy"></context:component-scan>
+	<!-- 启用spring mvc 注解 -->
+	<mvc:annotation-driven />
+	
+	<import resource="config/spring/**/bean-*.xml"/>
+</beans>
